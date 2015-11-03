@@ -1,0 +1,186 @@
+<html>
+<head>
+<title>Sequence board by leecbaker</title>
+<meta charset="UTF-8">
+
+<style>
+table {
+	width: 100%;
+	height: 100%;
+}
+
+.tiletable {
+	font-size:10px;
+}
+
+.tile {
+	width:9%;
+	height:9%;
+}
+
+.red {
+	border-radius: 50%;
+	width: 50%;
+	height: 50%; 
+}
+
+td {
+	background-color: #eee;
+	border:1px solid #777;
+    text-align: center;
+}
+
+table {
+	border: 0px solid white;
+}
+</style>
+
+
+</head>
+<body>
+<script> <!--
+
+board_width = 10;
+board_height = 10;
+
+//make array
+board = new Array(board_height);
+for(var i = 0; i < board_height; i++) {
+	board[i] = new Array(board_width);
+
+	for( var j = 0; j < board_width; j++) {
+		board[i][j] = i+1;
+	}
+}
+
+//make linear IDs for array
+var x = 0;
+var y = 0;
+var n = board_height;
+for( var i = n - 1; i >= 0; i -= 2) {
+	x += i * 4;
+	y += 1;
+
+	for(var j = 0; j < i; j++) {
+		board[j + y - 1][y] = x + j;
+	}
+
+	for(var ii = 0; ii < i; ii++){
+		board[y-1][y + ii] = x - ii;
+	}
+
+	R = board[n - y][y - 1] + 1;
+	for(var k = 0; k < i; k++) {
+		board[n - y][y + k] = R + k;
+	}
+
+	for(var j = y; j < y + i - 1; j++) {
+		board[j][n - y] = board[j - 1][n - y] - 1
+	}
+}
+
+//go to zero based
+for(var i = 0; i < board_height; i++) {
+	for( var j = 0; j < board_width; j++) {
+		board[i][j] -= 1;
+	}
+}
+
+
+function makeNodeForId(num) {
+	var original_num = num;
+	var el = null;
+	if(num == 0 || num == 9 || num == 18 || num == 27) {
+		el = document.createTextNode(" • ");
+	} else {
+		if(num >= 27) num -= 1;
+		if(num >= 18) num -= 1;
+		if(num >= 9) num -= 1;
+
+		//return document.createTextNode(num);
+
+		//corners
+		num -= 1;
+
+		var suit = Math.floor(num  / 12) % 4;
+		var card_id = num % 12;
+
+		var card = card_id + 2;
+
+		if(card_id == 11) card = "A";
+		if(card_id == 10) card = "K";
+		if(card_id == 9) card = "Q";
+
+		if(suit == 0) card += " ♣";
+		if(suit == 1) card += " ♦";
+		if(suit == 2) card += " ♠";
+		if(suit == 3) card += " ♥";
+
+		var el = document.createElement('span');
+		if(suit == 0 || suit == 2) {
+			el.style="color:black";
+		} else {
+			el.style="color:red";
+		}
+
+		var txt = document.createTextNode(card);
+		el.appendChild(txt);
+	}
+
+	el.dataset = {"num":num};
+	el.id = "tile" + original_num;
+	el.className = "tile";
+
+	return el;
+
+}
+
+ function make_table() {
+
+    var tbl     = document.createElement("table");
+    var tblBody = document.createElement("tbody");
+
+    for (var j = 0; j < board_width; j++) {
+        // table row creation
+        var row = document.createElement("tr");
+
+        for (var i = 0; i < board_height; i++) {
+        	var cell = document.createElement("td");    
+        	var num = j * 10 + i;
+        	var sequence_num = board[i][j];
+
+         	var cellNode = makeNodeForId(sequence_num); 
+
+            cell.appendChild(cellNode);
+            row.appendChild(cell);
+        }
+
+        tblBody.appendChild(row);
+    }
+
+    tbl.appendChild(tblBody);
+    var body = document.getElementsByTagName("body")[0];
+    body.appendChild(tbl);
+    tbl.setAttribute("border", "2");
+    tbl.id = "tiletable";
+}
+
+make_table();
+
+//resize table labels so that they are as big as possible
+for(var font_size = 10; font_size < 1000; font_size++) {
+	document.getElementById("tiletable").style.fontSize = font_size;
+
+	if(document.documentElement.clientWidth != window.innerWidth || 
+		document.documentElement.clientHeight != window.innerHeight) {
+		document.getElementById("tiletable").style.fontSize = font_size -1 ;
+		break;
+	}
+}
+
+-->
+</script>
+
+
+</body>
+</html>
